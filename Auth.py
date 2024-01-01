@@ -47,8 +47,7 @@ class Registration(customtkinter.CTkFrame):
             return
         if not self.app_instance.user.is_logged_in and self.app_instance.user.register(fullname, username, password, email):
             self.message.show_checkmark("Registration successful")
-            print(self.app_instance.user.username,
-                  self.app_instance.user.password)
+
         else:
             self.message.show_error("Registration failed")
             self.app_instance.user = self.app_instance.user

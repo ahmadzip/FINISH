@@ -1,6 +1,5 @@
 import datetime
 import random
-
 from User import User
 
 
@@ -31,12 +30,27 @@ class PersonalFinanceManager(User):
                 daily_expense["deskripsi"] = category
                 self.pengeluaran_list.append(daily_expense)
 
-        print("Fake data generated")
-        print(self.pemasukan_list)
-        print(self.pengeluaran_list)
+    def pemasukan_keuangan(self, jumlah, deskripsi_deposit):
+        if self.is_logged_in:
+            self.balance += jumlah
+            self.pemasukan_list.append(
+                {"jumlah": jumlah, "deskripsi": deskripsi_deposit, "tanggal": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+            return True
+        return False
+
+    def pengeluaran_harian(self, jumlah, deskripsi_pengeluaran):
+        if self.is_logged_in and self.balance >= jumlah:
+            self.balance -= jumlah
+            self.pengeluaran_list.append(
+                {"jumlah": jumlah, "deskripsi": deskripsi_pengeluaran, "tanggal": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+            return True
+        return False
 
     def get_data_pemasukan(self):
         return self.pemasukan_list
 
     def get_data_pengeluaran_harian(self):
         return self.pengeluaran_list
+
+    def get_saldo(self):
+        return self.balance

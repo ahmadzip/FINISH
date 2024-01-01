@@ -26,4 +26,4 @@ class Message:
         if response == "Yes":
             self.app.destroy()
         else:
-            print("Click 'Yes' to exit!")
+            self.show_info("Exit cancelled")

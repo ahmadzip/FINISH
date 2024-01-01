@@ -44,11 +44,12 @@ class App(customtkinter.CTk):
                                                       fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"),
                                                       anchor="w", command=self.pengeluaran_button_event)
         self.expense_button.grid(row=3, column=0, sticky="ew")
-
+        self.mode_label = customtkinter.CTkLabel(
+            self.navigation_frame, text="Saldo: Rp. 0", compound="left", font=customtkinter.CTkFont(size=15, weight="bold"))
+        self.mode_label.grid(row=5, column=0, padx=20, pady=20)
         self.mode_button = customtkinter.CTkButton(self.navigation_frame, text="Light",
                                                    command=self.toggle_mode)
         self.mode_button.grid(row=6, column=0, padx=20, pady=20, sticky="s")
-
         self.home_frame = customtkinter.CTkFrame(
             self, corner_radius=0, fg_color="transparent")
         self.home_frame.grid_columnconfigure(0, weight=1)
@@ -58,10 +59,14 @@ class App(customtkinter.CTk):
         self.login_frame.grid(row=0, column=1, sticky="nsew")
         self.select_frame_by_name("login")
 
+    def update_saldo_label(self):
+        saldo = self.finance_manager.get_saldo()
+        self.mode_label.configure(text=f"Saldo: Rp. {saldo}")
     def create_graphs(self):
+        self.update_saldo_label()
         figure, (monthly_income_ax, monthly_expenses_ax) = plt.subplots(
             1, 2, figsize=(14, 4))
-
+    
         income_data = self.finance_manager.get_data_pemasukan()
         expenses_data = self.finance_manager.get_data_pengeluaran_harian()
         monthly_income_data = self.aggregate_data_by_month(income_data)
@@ -94,6 +99,7 @@ class App(customtkinter.CTk):
 
     def home_button_event(self):
         self.select_frame_by_name("home")
+        self.select_frame_by_name("home")
         self.create_graphs()
 
     def hide_all_frames(self):
@@ -104,7 +110,6 @@ class App(customtkinter.CTk):
         self.expense_frame.grid_forget()
 
     def select_frame_by_name(self, name):
-        print(name)
         if not self.logged_in and name not in ["login", "register"]:
             self.message.show_error("Please login first")
             return
@@ -162,6 +167,7 @@ class App(customtkinter.CTk):
         self.submit_button.grid(row=3, column=0, padx=20, pady=10)
 
     def submit_income(self):
+        self.update_saldo_label()
         income = int(self.income_entry.get())
         description = self.description_entry.get()
         resin = self.finance_manager.pemasukan_keuangan(income, description)
@@ -171,6 +177,7 @@ class App(customtkinter.CTk):
             self.message.show_error("Pemasukan Gagal")
 
     def create_expense_frame(self):
+        self.update_saldo_label()
         self.expense_frame = customtkinter.CTkFrame(
             self, corner_radius=0, fg_color="transparent")
         self.expense_frame.grid_columnconfigure(0, weight=1)
