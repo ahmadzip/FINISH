@@ -45,9 +45,9 @@ class Registration(customtkinter.CTkFrame):
         if not fullname or not username or not email or not password:
             self.message.show_error("Please fill all fields")
             return
-        if not self.app_instance.user.is_logged_in and self.app_instance.user.register(fullname, username, password, email):
+        if not self.app_instance.user.is_logged_in and self.app_instance.user.database.register_user(fullname, username, password, email):
             self.message.show_checkmark("Registration successful")
-
+            self.app_instance.select_frame_by_name("login")
         else:
             self.message.show_error("Registration failed")
             self.app_instance.user = self.app_instance.user

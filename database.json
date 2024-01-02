@@ -1,0 +1,74 @@
+{
+  "users": [
+    {
+      "name": "1",
+      "username": "1",
+      "password": "1",
+      "email": "1",
+      "balance": 111111111232,
+      "keuangan": {
+        "pemasukan_list": [
+          {
+            "jumlah": 111111111111,
+            "deskripsi": "111",
+            "tanggal": "2024-01-03 01:44:15"
+          },
+          {
+            "jumlah": 1,
+            "deskripsi": "1",
+            "tanggal": "2024-01-03 01:55:03"
+          },
+          {
+            "jumlah": 123,
+            "deskripsi": "123",
+            "tanggal": "2024-01-03 01:57:10"
+          }
+        ],
+        "pengeluaran_list": [
+          {
+            "jumlah": 1,
+            "deskripsi": "23123",
+            "tanggal": "2024-01-03 01:54:42"
+          },
+          {
+            "jumlah": 1,
+            "deskripsi": "1",
+            "tanggal": "2024-01-03 01:54:51"
+          },
+          {
+            "jumlah": 1,
+            "deskripsi": "1",
+            "tanggal": "2024-01-03 01:54:51"
+          },
+          {
+            "jumlah": 123,
+            "deskripsi": "123",
+            "tanggal": "2024-01-03 01:57:15"
+          }
+        ]
+      }
+    },
+    {
+      "name": "1",
+      "username": "1",
+      "password": "1",
+      "email": "1",
+      "balance": 0,
+      "keuangan": {
+        "pemasukan_list": [],
+        "pengeluaran_list": []
+      }
+    },
+    {
+      "name": "123123",
+      "username": "123123",
+      "password": "123123123",
+      "email": "123123",
+      "balance": 0,
+      "keuangan": {
+        "pemasukan_list": [],
+        "pengeluaran_list": []
+      }
+    }
+  ]
+}

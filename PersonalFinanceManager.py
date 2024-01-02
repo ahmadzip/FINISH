@@ -1,56 +1,101 @@
 import datetime
 import random
 from User import User
+from Database import Database
 
 
 class PersonalFinanceManager(User):
-    def __init__(self, username, password):
-        super().__init__(username, password)
+    def __init__(self, name, username, password, email):
+        super().__init__(name, username, password, email)
         self.balance = 0
         self.pemasukan_list = []
         self.pengeluaran_list = []
-        self.generate_fake_data()
+        self.database = Database()
+        self.username = username
 
-    def generate_fake_data(self):
-        for month in range(5, 13):
-            fake_date = datetime.datetime(2023, month, 1, 6, 0, 0)
-            self.pemasukan_list.append(
-                {"jumlah": 2000000, "deskripsi": "Gaji", "tanggal": fake_date.strftime("%Y-%m-%d %H:%M:%S")})
-
-        for month in range(5, 13):
-            days_in_month = (datetime.datetime(2023, month %
-                             12 + 1, 1) - datetime.datetime(2023, month, 1)).days
-            for day in range(1, days_in_month + 1):
-                daily_expense = {
-                    "jumlah": random.randint(30000, 60000),
-                    "tanggal": datetime.datetime(2023, month, day, 12, 0, 0).strftime("%Y-%m-%d %H:%M:%S")
-                }
-                categories = ["Makan", "Jajan", "Bensin"]
-                category = random.choice(categories)
-                daily_expense["deskripsi"] = category
-                self.pengeluaran_list.append(daily_expense)
-
-    def pemasukan_keuangan(self, jumlah, deskripsi_deposit):
-        if self.is_logged_in:
-            self.balance += jumlah
-            self.pemasukan_list.append(
-                {"jumlah": jumlah, "deskripsi": deskripsi_deposit, "tanggal": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+    def sync_data(self, username):
+        self.username = username
+        user_data = self.database.get_user_data(username)
+        if user_data and "balance" in user_data:
+            self.balance = user_data["balance"]
+            self.pemasukan_list = user_data["keuangan"]["pemasukan_list"]
+            self.pengeluaran_list = user_data["keuangan"]["pengeluaran_list"]
             return True
         return False
 
-    def pengeluaran_harian(self, jumlah, deskripsi_pengeluaran):
+    def pemasukan_keuangan(self, jumlah, deskripsi_deposit, username):
+        self.username = username
+        if self.is_logged_in:
+            self.balance += jumlah
+            pemasukan_data = {"jumlah": jumlah, "deskripsi": deskripsi_deposit,
+                              "tanggal": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+            self.database.keuangan(username, pemasukan=pemasukan_data)
+            return True
+        return False
+
+    def pengeluaran_harian(self, jumlah, deskripsi_pengeluaran, username):
+        self.username = username
         if self.is_logged_in and self.balance >= jumlah:
             self.balance -= jumlah
-            self.pengeluaran_list.append(
-                {"jumlah": jumlah, "deskripsi": deskripsi_pengeluaran, "tanggal": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")})
+            pengeluaran_data = {"jumlah": jumlah, "deskripsi": deskripsi_pengeluaran,
+                                "tanggal": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
+            self.database.keuangan(username, pengeluaran=pengeluaran_data)
             return True
         return False
 
     def get_data_pemasukan(self):
+        self.pemasukan_list = []
+        for pemasukan in self.database.get_user_data(self.username)["keuangan"]["pemasukan_list"]:
+            self.pemasukan_list.append(pemasukan)
         return self.pemasukan_list
 
     def get_data_pengeluaran_harian(self):
+        self.pengeluaran_list = []
+        for pengeluaran in self.database.get_user_data(self.username)["keuangan"]["pengeluaran_list"]:
+            if pengeluaran["tanggal"].split(" ")[0] == datetime.datetime.now().strftime("%Y-%m-%d"):
+                self.pengeluaran_list.append(pengeluaran)
         return self.pengeluaran_list
 
-    def get_saldo(self):
-        return self.balance
+    def get_saldo(self, username):
+        self.username = username
+        user_data = self.database.get_user_data(username)
+
+        if user_data and "balance" in user_data:
+            self.balance = user_data["balance"]
+            return self.balance
+        else:
+            return 0
+
+    def delete_pemasukan(self, data1, data2, data3, username):
+        strrrr = [data1, data3, data2]
+        self.username = username
+        getdata = self.database.get_user_data(username)
+        for i in range(len(getdata["keuangan"]["pemasukan_list"])):
+            if getdata["keuangan"]["pemasukan_list"][i]["tanggal"] == strrrr[2]:
+                getdata["keuangan"]["pemasukan_list"].pop(i)
+                self.database.save_data()
+                return True
+
+        for i in range(len(self.pemasukan_list)):
+            if self.pemasukan_list[i]["tanggal"] == strrrr[2]:
+                self.pemasukan_list.pop(i)
+                self.database.save_data()
+                return True
+        return False
+
+    def delete_pengeluaran(self, data1, data2, data3, username):
+        strrrr = [data1, data3, data2]
+        self.username = username
+        getdata = self.database.get_user_data(username)
+        for i in range(len(getdata["keuangan"]["pengeluaran_list"])):
+            if getdata["keuangan"]["pengeluaran_list"][i]["tanggal"] == strrrr[2]:
+                getdata["keuangan"]["pengeluaran_list"].pop(i)
+                self.database.save_data()
+                return True
+
+        for i in range(len(self.pengeluaran_list)):
+            if self.pengeluaran_list[i]["tanggal"] == strrrr[2]:
+                self.pengeluaran_list.pop(i)
+                self.database.save_data()
+                return True
+        return False
